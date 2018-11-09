@@ -1,0 +1,194 @@
+use Qualification2;
+GRANT UPDATE,INSERT,SELECT ON QUALIFICATION2.Qualification TO students@localhost identified BY 'seito';
+
+ GRANT USAGE ON *.* TO 'students'@'localhost'                                               
+ GRANT SELECT ON `qualification2`.`classification` TO 'students'@'localhost'                
+ GRANT SELECT ON `qualification2`.`course` TO 'students'@'localhost'                        
+ GRANT SELECT ON `qualification2`.`credential_information` TO 'students'@'localhost'        
+ GRANT SELECT, INSERT, UPDATE ON `qualification2`.`qualification` TO 'students'@'localhost' 
+ GRANT SELECT, UPDATE ON `qualification2`.`student` TO 'students'@'localhost'               
+ GRANT SELECT ON `qualification2`.`department` TO 'students'@'localhost'                    
+
+CREATE TABLE STUDENT ( 
+SID INT(7) NOT NULL,  
+SNAME VARCHAR(20) NOT NULL, 
+SKNAME VARCHAR(20) NOT NULL , 
+SEMAIL VARCHAR(40) NOT NULL, 
+DEPARTMENT_ID INT(2) NOT NULL, 
+COURSE_ID INT(2) NOT NULL, 
+SCHOOL_YEAR INT(1) NOT NULL,
+CLASS INT(1) NOT NULL, 
+QUESTION INT(2) NOT NULL,
+ANSWER VARCHAR(30) NOT NULL,
+PASSWORD VARCHAR(40)  NOT NULL, 
+INDEX(SID), 
+PRIMARY KEY(SID),
+FOREIGN KEY (DEPARTMENT_ID)
+REFERENCES DEPARTMENT(DEPARTMENT_ID)
+on update cascade,
+FOREIGN KEY (DEPARTMENT_ID,COURSE_ID)
+REFERENCES COURSE(DEPARTMENT_ID,COURSE_ID)
+on update cascade
+)ENGINE=InnoDB; 
+生徒
+
+CREATE TABLE TEACHER( 
+TID INT(7) NOT NULL, 
+TNAME VARCHAR(20) NOT NULL, 
+TKNAME VARCHAR(20) NOT NULL, 
+TEMAIL VARCHAR(40) NOT NULL, 
+QUESTION INT(2) NOT NULL,
+ANSWER VARCHAR(30) NOT NULL,
+PASSWORD VARCHAR(40) NOT NULL, 
+LOGIN DATETIME NOT NULL,
+ADMIN INT(1) NOT NULL,
+INDEX(TID), 
+PRIMARY KEY(TID) 
+)ENGINE=InnoDB;  
+教師
+
+CREATE TABLE QUALIFICATION( 
+QID INT(9) NOT NULL AUTO_INCREMENT, 
+CID INT(6) NOT NULL, 
+CNAME VARCHAR(20) NOT NULL, 
+DIFFICULTY VARCHAR(1) NOT NULL,
+SID INT(7) NOT NULL,  
+DEPARTMENT_ID INT(2), 
+COURSE_ID INT(2), 
+SCHOOL_YEAR INT(1),
+CLASS INT(1), 
+REGISTRATION_DATE DATE NOT NULL, 
+UPDATE_DATE DATETIME NOT NULL,
+EXAM_DATE DATE NOT NULL, 
+RESULT VARCHAR(3) NOT NULL, 
+PRIMARY KEY (QID),
+FOREIGN KEY (CID)
+REFERENCES CREDENTIAL_INFORMATION(CID)
+ON UPDATE CASCADE,
+FOREIGN KEY (SID)
+REFERENCES student(SID)
+ON UPDATE CASCADE,
+FOREIGN KEY (DEPARTMENT_ID)
+REFERENCES DEPARTMENT(DEPARTMENT_ID)
+ON UPDATE CASCADE ON DELETE SET NULL,
+FOREIGN KEY (DEPARTMENT_ID,COURSE_ID)
+REFERENCES COURSE(DEPARTMENT_ID,COURSE_ID)
+ON UPDATE CASCADE ON DELETE SET NULL
+)ENGINE=InnoDB; 
+受験情報
+
+CREATE TABLE CREDENTIAL_INFORMATION( 
+CID INT(6) NOT NULL, 
+CNAME VARCHAR(20) NOT NULL, 
+CLASSIFICATION_ID INT(4), 
+DIFFICULTY VARCHAR(1) NOT NULL, 
+SUPERIOR1 INT(6),
+SUPERIOR2 INT(6),
+SUPERIOR3 INT(6),
+SUPERIOR4 INT(6),
+LOW_ORDER1 INT(6), 
+LOW_ORDER2 INT(6), 
+LOW_ORDER3 INT(6), 
+LOW_ORDER4 INT(6), 
+PRIMARY KEY (CID) ,
+FOREIGN KEY (CLASSIFICATION_ID )
+REFERENCES CLASSIFICATION(CLASSIFICATION_ID)
+ON DELETE SET NULL
+on update cascade
+)ENGINE=InnoDB; 
+資格情報
+
+insert into CREDENTIAL_INFORMATION values(
+100000,'ITパスポート',1002,'C',100001,null,null,null,null,null,null,null
+);
+insert into CREDENTIAL_INFORMATION values(
+100001,'基本情報技術者試験',1002,'B',100002,null,null,null,100000,null,null,null
+);
+insert into CREDENTIAL_INFORMATION values(
+100002,'応用情報技術者試験',1002,'A',null,null,null,null,100001,null,null,null
+);
+
+CREATE TABLE DEPARTMENT(
+DEPARTMENT_ID INT(2) NOT NULL,
+DEPARTMENT_NAME VARCHAR(30) NOT NULL,
+PRIMARY KEY (DEPARTMENT_ID))
+ENGINE=InnoDB;
+学科
+
+CREATE TABLE COURSE (
+DEPARTMENT_ID INT(2) NOT NULL,
+COURSE_ID INT(2) NOT NULL,
+COURSE_NAME VARCHAR(30) NOT NULL,
+PRIMARY KEY (DEPARTMENT_ID,COURSE_ID),
+FOREIGN KEY (DEPARTMENT_ID)
+REFERENCES DEPARTMENT(DEPARTMENT_ID)
+on update cascade
+)ENGINE=InnoDB;
+コース
+
+CREATE TABLE CLASSIFICATION(
+CLASSIFICATION_ID INT(4) NOT NULL,
+CLASSIFICATION_NAME VARCHAR(30) NOT NULL,
+PRIMARY KEY (CLASSIFICATION_ID)
+)ENGINE=InnoDB;
+区分
+
+insert into classification values(1002,'経済産業省');
+
+学科
+1
+10:情報システム科
+20:総合システム工学科
+30:ネットワーク・セキュリティ科
+40:高度情報工学科
+2
+50:情報ビジネス科
+60:会計ビジネス科
+3
+70:デザイン科
+80:総合デザイン科
+
+insert into department values(10,'情報システム科');
+insert into department values(20,'総合システム工学科');
+insert into department values(30,'ネットワーク・セキュリティ科');
+insert into department values(40,'高度情報工学科');
+insert into department values(50,'情報ビジネス科');
+insert into department values(60,'会計ビジネス科');
+insert into department values(70,'デザイン科');
+insert into department values(80,'総合デザイン科');
+
+コース
+
+11:システムエンジニアコース
+12:スマートフォンアプリ開発コース
+21:WEBプログラマコース
+22:組込みシステムコース
+31:ネットワークエンジニアコース
+32:情報セキュリティコース
+41:高度情報工学科
+51:情報ビジネスコース
+52:公共ビジネスコース
+61:会計ビジネスコース
+62:会計エキスパートコース
+71:グラフィックデザインコース
+72:アニメ・マンガコース
+73:CGクリエイトコース
+74:建築インテリアコース
+81:総合デザインコース
+
+insert into course values(10,11,'システムエンジニアコース');
+insert into course values(10,12,'スマートフォンアプリ開発コース');
+insert into course values(20,21,'WEBプログラマコース');
+insert into course values(20,22,'組込みシステムコース');
+insert into course values(30,31,'ネットワークエンジニアコース');
+insert into course values(30,32,'情報セキュリティコース');
+insert into course values(40,41,'高度情報工学科');
+insert into course values(50,51,'情報ビジネスコース');
+insert into course values(50,52,'公共ビジネスコース');
+insert into course values(60,61,'会計ビジネスコース');
+insert into course values(60,62,'会計エキスパートコース');
+insert into course values(70,71,'グラフィックデザインコース');
+insert into course values(70,72,'アニメ・マンガコース');
+insert into course values(70,73,'CGクリエイトコース');
+insert into course values(70,74,'建築インテリアコース');
+insert into course values(80,81,'総合デザインコース');
