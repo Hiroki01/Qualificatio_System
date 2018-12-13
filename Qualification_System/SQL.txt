@@ -1,194 +1,185 @@
-use Qualification2;
 GRANT UPDATE,INSERT,SELECT ON QUALIFICATION2.Qualification TO students@localhost identified BY 'seito';
+GRANT USAGE ON *.* TO 'students'@'localhost'                                           
+GRANT SELECT ON `qualification2`.`department` TO 'students'@'localhost'                   
+GRANT SELECT ON `qualification2`.`subject` TO 'students'@'localhost'                      
+GRANT SELECT ON `qualification2`.`course` TO 'students'@'localhost'                       
+GRANT SELECT ON `qualification2`.`credential_information` TO 'students'@'localhost'       
+GRANT SELECT ON `qualification2`.`desrcpition` TO 'students'@'localhost'                  
+GRANT SELECT, INSERT, UPDATE ON `qualification2`.`student` TO 'students'@'localhost'      
+GRANT SELECT ON `qualification2`.`classification` TO 'students'@'localhost'               
+GRANT SELECT, INSERT, UPDATE ON `qualification2`.`qualification` TO 'students'@'localhost'
 
- GRANT USAGE ON *.* TO 'students'@'localhost'                                               
- GRANT SELECT ON `qualification2`.`classification` TO 'students'@'localhost'                
- GRANT SELECT ON `qualification2`.`course` TO 'students'@'localhost'                        
- GRANT SELECT ON `qualification2`.`credential_information` TO 'students'@'localhost'        
- GRANT SELECT, INSERT, UPDATE ON `qualification2`.`qualification` TO 'students'@'localhost' 
- GRANT SELECT, UPDATE ON `qualification2`.`student` TO 'students'@'localhost'               
- GRANT SELECT ON `qualification2`.`department` TO 'students'@'localhost'                    
+GRANT SELECT,UPDATE,INSERT,DELETE ON QUALIFICATION2.QUALIFICATION TO teacher@localhost identified BY 'sensei';
+GRANT USAGE ON *.* TO 'teacher'@'localhost'                                                      
+GRANT SELECT ON `qualification2`.* TO 'teacher'@'localhost'                                      
+GRANT SELECT, INSERT, UPDATE, DELETE ON `qualification2`.`qualification` TO 'teacher'@'localhost'
+GRANT SELECT ON `qualification2`.`student` TO 'teacher'@'localhost'                              
+GRANT SELECT ON `qualification2`.`classification` TO 'teacher'@'localhost'                       
+GRANT SELECT, UPDATE ON `qualification2`.`teacher` TO 'teacher'@'localhost'
 
-CREATE TABLE STUDENT ( 
-SID INT(7) NOT NULL,  
-SNAME VARCHAR(20) NOT NULL, 
-SKNAME VARCHAR(20) NOT NULL , 
-SEMAIL VARCHAR(40) NOT NULL, 
-DEPARTMENT_ID INT(2) NOT NULL, 
-COURSE_ID INT(2) NOT NULL, 
-SCHOOL_YEAR INT(1) NOT NULL,
-CLASS INT(1) NOT NULL, 
-QUESTION INT(2) NOT NULL,
-ANSWER VARCHAR(30) NOT NULL,
-PASSWORD VARCHAR(40)  NOT NULL, 
-INDEX(SID), 
-PRIMARY KEY(SID),
-FOREIGN KEY (DEPARTMENT_ID)
-REFERENCES DEPARTMENT(DEPARTMENT_ID)
-on update cascade,
-FOREIGN KEY (DEPARTMENT_ID,COURSE_ID)
-REFERENCES COURSE(DEPARTMENT_ID,COURSE_ID)
-on update cascade
-)ENGINE=InnoDB; 
-生徒
+GRANT ALL ON QUALIFICATION2.* TO admin@localhost identified BY 'Shroomish';
+GRANT USAGE ON *.* TO 'admin'@'localhost'
+GRANT ALL PRIVILEGES ON `qualification2`.* TO 'admin'@'localhost'
 
-CREATE TABLE TEACHER( 
-TID INT(7) NOT NULL, 
-TNAME VARCHAR(20) NOT NULL, 
-TKNAME VARCHAR(20) NOT NULL, 
-TEMAIL VARCHAR(40) NOT NULL, 
-QUESTION INT(2) NOT NULL,
-ANSWER VARCHAR(30) NOT NULL,
-PASSWORD VARCHAR(40) NOT NULL, 
-LOGIN DATETIME NOT NULL,
-ADMIN INT(1) NOT NULL,
-INDEX(TID), 
-PRIMARY KEY(TID) 
-)ENGINE=InnoDB;  
-教師
-
-CREATE TABLE QUALIFICATION( 
-QID INT(9) NOT NULL AUTO_INCREMENT, 
-CID INT(6) NOT NULL, 
-CNAME VARCHAR(20) NOT NULL, 
-DIFFICULTY VARCHAR(1) NOT NULL,
-SID INT(7) NOT NULL,  
-DEPARTMENT_ID INT(2), 
-COURSE_ID INT(2), 
-SCHOOL_YEAR INT(1),
-CLASS INT(1), 
-REGISTRATION_DATE DATE NOT NULL, 
-UPDATE_DATE DATETIME NOT NULL,
-EXAM_DATE DATE NOT NULL, 
-RESULT VARCHAR(3) NOT NULL, 
+CREATE TABLE qualification (
+QID int(9) NOT NULL AUTO_INCREMENT,
+CID int(6) NOT NULL,
+CNAME varchar(40) DEFAULT NULL,
+DIFFICULTY varchar(1) NOT NULL,
+SID int(7) NOT NULL,
+SUBJECT_ID int(1) DEFAULT NULL,
+DEPARTMENT_ID int(2) DEFAULT NULL,
+COURSE_ID int(2) DEFAULT NULL,
+SCHOOL_YEAR int(1) DEFAULT NULL,
+CLASS int(1) DEFAULT NULL,
+REGISTRATION_DATE date NOT NULL,
+UPDATE_DATE datetime NOT NULL,
+EXAM_DATE date NOT NULL,
+RESULT varchar(3) NOT NULL,
 PRIMARY KEY (QID),
-FOREIGN KEY (CID)
-REFERENCES CREDENTIAL_INFORMATION(CID)
-ON UPDATE CASCADE,
-FOREIGN KEY (SID)
-REFERENCES student(SID)
-ON UPDATE CASCADE,
-FOREIGN KEY (DEPARTMENT_ID)
-REFERENCES DEPARTMENT(DEPARTMENT_ID)
-ON UPDATE CASCADE ON DELETE SET NULL,
-FOREIGN KEY (DEPARTMENT_ID,COURSE_ID)
-REFERENCES COURSE(DEPARTMENT_ID,COURSE_ID)
-ON UPDATE CASCADE ON DELETE SET NULL
-)ENGINE=InnoDB; 
-受験情報
+KEY CID (CID),
+KEY SID (SID),
+KEY DEPARTMENT_ID (DEPARTMENT_ID,COURSE_ID),
+KEY SUBJECT_ID (SUBJECT_ID),
+CONSTRAINT qualification_ibfk_1 FOREIGN KEY (CID) REFERENCES credential_information (CID) ON UPDATE CASCADE,
+CONSTRAINT qualification_ibfk_2 FOREIGN KEY (SID) REFERENCES student (SID) ON UPDATE CASCADE,
+CONSTRAINT qualification_ibfk_3 FOREIGN KEY (DEPARTMENT_ID) REFERENCES department (DEPARTMENT_ID) ON DELETE SET NULL ON UPDATE CASCADE,
+CONSTRAINT qualification_ibfk_4 FOREIGN KEY (DEPARTMENT_ID, COURSE_ID) REFERENCES course (DEPARTMENT_ID, COURSE_ID`) ON DELETE SET NULL ON UPDATE CASCADE,
+CONSTRAINT qualification_ibfk_5 FOREIGN KEY (SUBJECT_ID) REFERENCES subject (SUBJECT_ID) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+受験情報管理テーブル
 
-CREATE TABLE CREDENTIAL_INFORMATION( 
-CID INT(6) NOT NULL, 
-CNAME VARCHAR(20) NOT NULL, 
-CLASSIFICATION_ID INT(4), 
-DIFFICULTY VARCHAR(1) NOT NULL, 
-SUPERIOR1 INT(6),
-SUPERIOR2 INT(6),
-SUPERIOR3 INT(6),
-SUPERIOR4 INT(6),
-LOW_ORDER1 INT(6), 
-LOW_ORDER2 INT(6), 
-LOW_ORDER3 INT(6), 
-LOW_ORDER4 INT(6), 
-PRIMARY KEY (CID) ,
-FOREIGN KEY (CLASSIFICATION_ID )
-REFERENCES CLASSIFICATION(CLASSIFICATION_ID)
-ON DELETE SET NULL
-on update cascade
-)ENGINE=InnoDB; 
-資格情報
+CREATE TABLE student (
+SID int(7) NOT NULL,
+SNAME varchar(20) NOT NULL,
+SKNAME varchar(20) NOT NULL,
+SEMAIL varchar(40) NOT NULL,
+SUBJECT_ID int(1) NOT NULL,
+DEPARTMENT_ID int(2) NOT NULL,
+COURSE_ID int(2) NOT NULL,
+SCHOOL_YEAR int(1) NOT NULL,
+CLASS int(1) NOT NULL,
+QUESTION int(2) NOT NULL,
+ANSWER varchar(30) NOT NULL,
+PASSWORD varchar(40) NOT NULL,
+PRIMARY KEY (SID),
+KEY SID (SID),
+KEY DEPARTMENT_ID (DEPARTMENT_ID,COURSE_ID),
+KEY SUBJECT_ID (SUBJECT_ID),
+CONSTRAINT student_ibfk_1 FOREIGN KEY (DEPARTMENT_ID) REFERENCES department (DEPARTMENT_ID) ON UPDATE CASCADE,
+CONSTRAINT student_ibfk_2 FOREIGN KEY (DEPARTMENT_ID, COURSE_ID) REFERENCES course (DEPARTMENT_ID, COURSE_ID) ON UPDATE CASCADE,
+CONSTRAINT student_ibfk_3 FOREIGN KEY (SUBJECT_ID) REFERENCES subject (SUBJECT_ID) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+生徒テーブル
 
-insert into CREDENTIAL_INFORMATION values(
-100000,'ITパスポート',1002,'C',100001,null,null,null,null,null,null,null
-);
-insert into CREDENTIAL_INFORMATION values(
-100001,'基本情報技術者試験',1002,'B',100002,null,null,null,100000,null,null,null
-);
-insert into CREDENTIAL_INFORMATION values(
-100002,'応用情報技術者試験',1002,'A',null,null,null,null,100001,null,null,null
-);
+CREATE TABLE teacher (
+TID int(7) NOT NULL AUTO_INCREMENT,
+TNAME varchar(20) NOT NULL,
+TKNAME varchar(20) NOT NULL,
+TEMAIL varchar(40) NOT NULL,
+QUESTION int(2) NOT NULL,
+ANSWER varchar(30) NOT NULL,
+PASSWORD varchar(40) NOT NULL,
+LOGIN datetime NOT NULL,
+ADMIN int(1) NOT NULL,
+PRIMARY KEY (TID),
+KEY TID (TID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+教師テーブル
 
-CREATE TABLE DEPARTMENT(
-DEPARTMENT_ID INT(2) NOT NULL,
-DEPARTMENT_NAME VARCHAR(30) NOT NULL,
-PRIMARY KEY (DEPARTMENT_ID))
-ENGINE=InnoDB;
-学科
+CREATE TABLE credential_information (
+CID int(6) NOT NULL AUTO_INCREMENT,
+CNAME varchar(40) DEFAULT NULL,
+CLASSIFICATION_ID int(4) DEFAULT NULL,
+DIFFICULTY varchar(1) NOT NULL,
+SUPERIOR1 int(6) DEFAULT NULL,
+SUPERIOR2 int(6) DEFAULT NULL,
+SUPERIOR3 int(6) DEFAULT NULL,
+SUPERIOR4 int(6) DEFAULT NULL,
+LOW_ORDER1 int(6) DEFAULT NULL,
+LOW_ORDER2 int(6) DEFAULT NULL,
+LOW_ORDER3 int(6) DEFAULT NULL,
+LOW_ORDER4 int(6) DEFAULT NULL,
+PRIMARY KEY (CID),
+KEY CLASSIFICATION_ID (CLASSIFICATION_ID),
+CONSTRAINT credential_information_ibfk_1 FOREIGN KEY (CLASSIFICATION_ID) REFERENCES classification (CLASSIFICATION_ID) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+資格情報テーブル
 
-CREATE TABLE COURSE (
-DEPARTMENT_ID INT(2) NOT NULL,
-COURSE_ID INT(2) NOT NULL,
-COURSE_NAME VARCHAR(30) NOT NULL,
-PRIMARY KEY (DEPARTMENT_ID,COURSE_ID),
-FOREIGN KEY (DEPARTMENT_ID)
-REFERENCES DEPARTMENT(DEPARTMENT_ID)
-on update cascade
-)ENGINE=InnoDB;
-コース
-
-CREATE TABLE CLASSIFICATION(
-CLASSIFICATION_ID INT(4) NOT NULL,
-CLASSIFICATION_NAME VARCHAR(30) NOT NULL,
+CREATE TABLE classification (
+CLASSIFICATION_ID int(4) NOT NULL AUTO_INCREMENT,
+CLASSIFICATION_NAME varchar(30) NOT NULL,
 PRIMARY KEY (CLASSIFICATION_ID)
-)ENGINE=InnoDB;
-区分
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8
+主催情報テーブル
+
+CREATE TABLE subject (
+SUBJECT_ID int(1) NOT NULL AUTO_INCREMENT,
+SUBJECT_NAME varchar(30) NOT NULL,
+PRIMARY KEY (SUBJECT_ID)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+主要学科テーブル
+
+CREATE TABLE department (
+SUBJECT_ID int(1) NOT NULL,
+DEPARTMENT_ID int(2) NOT NULL AUTO_INCREMENT,
+DEPARTMENT_NAME varchar(30) NOT NULL,
+PRIMARY KEY (DEPARTMENT_ID),
+KEY SUBJECT_ID (SUBJECT_ID),
+CONSTRAINT department_ibfk_1 FOREIGN KEY (SUBJECT_ID) REFERENCES subject (SUBJECT_ID) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+学科テーブル
+
+CREATE TABLE course (
+DEPARTMENT_ID int(2) DEFAULT NULL,
+COURSE_ID int(2) NOT NULL AUTO_INCREMENT,
+COURSE_NAME varchar(30) NOT NULL,
+PRIMARY KEY (COURSE_ID),
+KEY DEPARTMENT_ID (DEPARTMENT_ID),
+CONSTRAINT course_ibfk_1 FOREIGN KEY (DEPARTMENT_ID) REFERENCES department (DEPARTMENT_ID) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+コース情報テーブル
+
+CREATE TABLE desrcpition (
+CID int(6) NOT NULL,
+DESRCPITION_ID int(6) NOT NULL AUTO_INCREMENT,
+URL text,
+PASS_RATE varchar(255) DEFAULT NULL,
+PASSING_GRADE varchar(255) DEFAULT NULL,
+PRIMARY KEY (DESRCPITION_ID),
+KEY CID (CID),
+CONSTRAINT desrcpition_ibfk_1 FOREIGN KEY (CID) REFERENCES credential_information (CID) ON UPDATE CASCADE,
+CONSTRAINT desrcpition_ibfk_2 FOREIGN KEY (CID) REFERENCES credential_information (CID) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+資格詳細テーブル
 
 insert into classification values(1002,'経済産業省');
+insert into subject values(1,'システム科');
+insert into subject values(2,'ビジネス科');
+insert into subject values(3,'デザイン科');
+insert into department values(1,null,'情報システム科');
+insert into department values(1,null,'総合システム工学科');
+insert into department values(1,null,'ネットワーク・セキュリティ科');
+insert into department values(1,null,'高度情報工学科');
+insert into department values(2,null,'情報ビジネス科');
+insert into department values(2,null,'会計ビジネス科');
+insert into department values(3,null,'デザイン科');
+insert into department values(3,null,'総合デザイン科');
+insert into course values(1,null,'システムエンジニアコース');
+insert into course values(1,null,'スマートフォンアプリ開発コース');
+insert into course values(2,null,'WEBプログラマコース');
+insert into course values(2,null,'組込みシステムコース');
+insert into course values(3,null,'ネットワークエンジニアコース');
+insert into course values(3,null,'情報セキュリティコース');
+insert into course values(4,null,'高度情報工学科');
+insert into course values(5,null,'情報ビジネスコース');
+insert into course values(5,null,'公共ビジネスコース');
+insert into course values(6,null,'会計ビジネスコース');
+insert into course values(6,null,'会計エキスパートコース');
+insert into course values(7,null,'グラフィックデザインコース');
+insert into course values(7,null,'アニメ・マンガコース');
+insert into course values(7,null,'CGクリエイトコース');
+insert into course values(7,null,'建築インテリアコース');
+insert into course values(8,null,'総合デザインコース');
 
-学科
-1
-10:情報システム科
-20:総合システム工学科
-30:ネットワーク・セキュリティ科
-40:高度情報工学科
-2
-50:情報ビジネス科
-60:会計ビジネス科
-3
-70:デザイン科
-80:総合デザイン科
 
-insert into department values(10,'情報システム科');
-insert into department values(20,'総合システム工学科');
-insert into department values(30,'ネットワーク・セキュリティ科');
-insert into department values(40,'高度情報工学科');
-insert into department values(50,'情報ビジネス科');
-insert into department values(60,'会計ビジネス科');
-insert into department values(70,'デザイン科');
-insert into department values(80,'総合デザイン科');
-
-コース
-
-11:システムエンジニアコース
-12:スマートフォンアプリ開発コース
-21:WEBプログラマコース
-22:組込みシステムコース
-31:ネットワークエンジニアコース
-32:情報セキュリティコース
-41:高度情報工学科
-51:情報ビジネスコース
-52:公共ビジネスコース
-61:会計ビジネスコース
-62:会計エキスパートコース
-71:グラフィックデザインコース
-72:アニメ・マンガコース
-73:CGクリエイトコース
-74:建築インテリアコース
-81:総合デザインコース
-
-insert into course values(10,11,'システムエンジニアコース');
-insert into course values(10,12,'スマートフォンアプリ開発コース');
-insert into course values(20,21,'WEBプログラマコース');
-insert into course values(20,22,'組込みシステムコース');
-insert into course values(30,31,'ネットワークエンジニアコース');
-insert into course values(30,32,'情報セキュリティコース');
-insert into course values(40,41,'高度情報工学科');
-insert into course values(50,51,'情報ビジネスコース');
-insert into course values(50,52,'公共ビジネスコース');
-insert into course values(60,61,'会計ビジネスコース');
-insert into course values(60,62,'会計エキスパートコース');
-insert into course values(70,71,'グラフィックデザインコース');
-insert into course values(70,72,'アニメ・マンガコース');
-insert into course values(70,73,'CGクリエイトコース');
-insert into course values(70,74,'建築インテリアコース');
-insert into course values(80,81,'総合デザインコース');
