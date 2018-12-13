@@ -1,8 +1,6 @@
 package studentServlet;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,10 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import masteDAO.CredentialDAO;
 import masteDAO.QualificationDAO;
-import masteDTO.CredentialDTO;
-import masteDTO.QualificationDTO;
 
 /**
  * Servlet implementation class UpdateResult
@@ -42,41 +37,34 @@ public class UpdateResult extends HttpServlet {
 		int sid = 0;
 
 		try {
+			//学籍番号
 			sid = (int) s.getAttribute("id");
+			String[] name = re.getParameterValues("cname");
+			String[] dates = re.getParameterValues("exdate");
+			String[] results = re.getParameterValues("results");
 
-			String name = re.getParameter("QuaName");
-			String year = re.getParameter("year");
-			String month = re.getParameter("month");
-			String day = re.getParameter("day");
-			String date = year + "/" + month + "/" + day;
-			String result = re.getParameter("result");
-
-			LocalDateTime dates = LocalDateTime.now();
-
-			QualificationDAO.Update(sid,name,date,String.valueOf(dates),result);
-
-			view = "/WEB-INF/student/registration.jsp";
+			//変更された情報に更新する
+			for(int i = 0; i <  name.length;i ++) {
+				QualificationDAO.update(sid,name[i],dates[i],results[i]);
+			}
+			view = "/Supdate";
 			s.setAttribute("status", "完了");
 		} catch (NumberFormatException e) {
-			view = "/WEB-INF/student/registration.jsp";
+			view = "/Supdate";
 			s.setAttribute("status", "Number");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (NullPointerException e) {
-			view = "/WEB-INF/student/registration.jsp";
+			view = "Supdate";
 			s.setAttribute("status", "nai");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (Exception e) {
-			view = "/WEB-INF/student/registration.jsp";
+			view = "Supdate";
 			s.setAttribute("status", "Exception");
 			e.getStackTrace();
 			System.out.println(e);
 		} finally {
-			ArrayList<QualificationDTO> one = QualificationDAO.serach(sid);
-			re.setAttribute("QuaDATE", one);
-			ArrayList<CredentialDTO> result = CredentialDAO.serachAll();
-			re.setAttribute("QuaName", result);
 			RequestDispatcher dispatcher = re.getRequestDispatcher(view);
 			dispatcher.forward(re, response);
 		}

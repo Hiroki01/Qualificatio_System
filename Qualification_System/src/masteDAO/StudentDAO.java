@@ -13,27 +13,29 @@ import masteDTO.StudentDTO;
 
 public class StudentDAO {
 
-	public static StudentDTO Insert(int id, String name, String namek, String email, int department,
+	public static void Insert(int id, String name, String namek, String email, int subject, int department,
 			int course, int school_year, int set_in, int question, String answer, String pass) {
-		StudentDTO result = null;
 		Connection co = null;
 		PreparedStatement ps = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			co = DriverManager.getConnection("jdbc:mysql://localhost:3306/Qualification2?useSSL=false", "students",
 					"seito");
-			String sql = "INSERT INTO Student VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO STUDENT\r\n" +
+					"SELECT ?,?,?,?,?,?,?,?,?,?,?,?\r\n" +
+					"WHERE NOT EXISTS (SELECT 1 FROM STUDENT WHERE SID = ?);";
 			ps = co.prepareStatement(sql);
 			ps.setInt(1, id);
 			ps.setString(2, name);
 			ps.setString(3, namek);
 			ps.setString(4, email);
-			ps.setInt(5, department);
-			ps.setInt(6, course);
-			ps.setInt(7, school_year);
-			ps.setInt(8, set_in);
-			ps.setInt(9, question);
-			ps.setString(10, answer);
+			ps.setInt(5, subject);
+			ps.setInt(6, department);
+			ps.setInt(7, course);
+			ps.setInt(8, school_year);
+			ps.setInt(9, set_in);
+			ps.setInt(10, question);
+			ps.setString(11, answer);
 			String value = pass;
 			String key = "";
 			try {
@@ -43,11 +45,10 @@ public class StudentDAO {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ps.setString(11, key);
+			ps.setString(12, key);
+			ps.setInt(13, id);
 
 			ps.executeUpdate();
-			result = new StudentDTO(id, name, namek, email, department, course, school_year, set_in, question, answer,
-					key);
 		} catch (SQLException e) {
 			System.out.println("DBアクセスに失敗しました。");
 			e.printStackTrace();
@@ -63,7 +64,6 @@ public class StudentDAO {
 				e.printStackTrace();
 			}
 		}
-		return result;
 	}
 
 	public static StudentDTO search(int key) {
@@ -85,6 +85,7 @@ public class StudentDAO {
 			String name = rs.getString("SNAME");
 			String namek = rs.getString("SKNAME");
 			String mail = rs.getString("SEMAIL");
+			int subject = rs.getInt("SUBJECT_ID");
 			int did = rs.getInt("DEPARTMENT_ID");
 			int coid = rs.getInt("COURSE_ID");
 			int year = rs.getInt("SCHOOL_YEAR");
@@ -92,7 +93,7 @@ public class StudentDAO {
 			int question = rs.getInt("QUESTION");
 			String answer = rs.getString("ANSWER");
 			String pass = rs.getString("PASSWORD");
-			result = new StudentDTO(id, name, namek, mail, did, coid, year, clasies, question, answer, pass);
+			result = new StudentDTO(id, name, namek, mail, subject,did, coid, year, clasies, question, answer, pass);
 		} catch (SQLException e) {
 			System.out.println("DBアクセスに失敗しました。");
 			e.printStackTrace();
@@ -128,7 +129,7 @@ public class StudentDAO {
 		return result;
 	}
 
-	public static StudentDTO update(int id, String name, String namek, String email, int department, int course,
+	public static StudentDTO updateS(int id, String name, String namek, String email, int subject , int department, int course,
 			int school_year, int set_in, int question, String answer, String pass) {
 		StudentDTO result = null;
 		Connection con = null;
@@ -143,6 +144,7 @@ public class StudentDAO {
 					"SET SNAME = ?,\r\n" +
 					"SKNAME =?,\r\n" +
 					"SEMAIL = ?,\r\n" +
+					"SUBJECT_ID = ?,\r\n" +
 					"DEPARTMENT_ID = ?,\r\n" +
 					"COURSE_ID = ?,\r\n" +
 					"SCHOOL_YEAR = ?,\r\n" +
@@ -156,13 +158,14 @@ public class StudentDAO {
 			ps.setString(1, name);
 			ps.setString(2, namek);
 			ps.setString(3, email);
-			ps.setInt(4, department);
-			ps.setInt(5, course);
-			ps.setInt(6, school_year);
-			ps.setInt(7, set_in);
-			ps.setInt(8, question);
-			ps.setString(9, answer);
-			ps.setInt(10, id);
+			ps.setInt(4, subject);
+			ps.setInt(5, department);
+			ps.setInt(6, course);
+			ps.setInt(7, school_year);
+			ps.setInt(8, set_in);
+			ps.setInt(9, question);
+			ps.setString(10, answer);
+			ps.setInt(11, id);
 			String value = pass;
 			String key = "";
 			try {
@@ -172,7 +175,7 @@ public class StudentDAO {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ps.setString(11, key);
+			ps.setString(12, key);
 
 			ps.executeUpdate();
 			result = new StudentDTO(id, name, namek, email, department, course, school_year, set_in, question, answer,
@@ -212,8 +215,8 @@ public class StudentDAO {
 		return result;
 	}
 
-	public static StudentDTO update(int id, String name, String namek, String email, int department, int course,
-			int school_year, int set_in, int question, String answer, String pass, String pass2) {
+	public static StudentDTO update(int id, String name, String namek, String email,int subject, int department, int course,
+			int school_year, int set_in, int question, String answer, String pass) {
 		StudentDTO result = null;
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -227,6 +230,7 @@ public class StudentDAO {
 					"SET SNAME = ?,\r\n" +
 					"SKNAME =?,\r\n" +
 					"SEMAIL = ?,\r\n" +
+					"SUBJECT_ID = ?,\r\n" +
 					"DEPARTMENT_ID = ?,\r\n" +
 					"COURSE_ID = ?,\r\n" +
 					"SCHOOL_YEAR = ?,\r\n" +
@@ -240,12 +244,13 @@ public class StudentDAO {
 			ps.setString(1, name);
 			ps.setString(2, namek);
 			ps.setString(3, email);
-			ps.setInt(4, department);
-			ps.setInt(5, course);
-			ps.setInt(6, school_year);
-			ps.setInt(7, set_in);
-			ps.setInt(8, question);
-			ps.setString(9, answer);
+			ps.setInt(4, subject);
+			ps.setInt(5, department);
+			ps.setInt(6, course);
+			ps.setInt(7, school_year);
+			ps.setInt(8, set_in);
+			ps.setInt(9, question);
+			ps.setString(10, answer);
 			String value = pass;
 			String key = "";
 			try {
@@ -255,8 +260,8 @@ public class StudentDAO {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ps.setString(10, key);
-			ps.setInt(11, id);
+			ps.setString(11, key);
+			ps.setInt(12, id);
 
 			ps.executeUpdate();
 			result = new StudentDTO(id, name, namek, email, department, course, school_year, set_in, question, answer,
@@ -439,7 +444,16 @@ public class StudentDAO {
 			String sql1 = "UPDATE STUDENT SET PASSWORD = 0 WHERE SID = ?;";
 			ps = con.prepareStatement(sql1);
 
-			ps.setInt(1, key);
+			String value = String.valueOf(key);
+			String pass = "";
+			try {
+				MessageDigest digest = MessageDigest.getInstance("SHA-1");
+				byte[] results = digest.digest(value.getBytes());
+				pass = String.format("%040x", new BigInteger(1, results));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			ps.setString(1, pass);
 
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -544,6 +558,7 @@ public class StudentDAO {
 			while (rs.next()) {
 				int id = rs.getInt("SID");
 				String name = rs.getString("SNAME");
+
 				resultlist.add(new StudentDTO(id, name));
 			}
 		} catch (SQLException e) {
@@ -581,4 +596,205 @@ public class StudentDAO {
 		return resultlist;
 	}
 
+	public static StudentDTO profile(int key) {
+		StudentDTO result = null;
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Qualification2?useSSL=false", "students", "seito");
+			String sql = "SELECT\r\n" +
+					"生徒.SNAME AS 氏名,\r\n" +
+					"生徒.SKNAME AS フリガナ,\r\n" +
+					"生徒.SEMAIL AS メール,\r\n" +
+					"生徒.SUBJECT_ID AS 3学科ID,\r\n" +
+					"3学科.SUBJECT_NAME AS 3学科,\r\n" +
+					"学科.DEPARTMENT_NAME AS 学科名,\r\n" +
+					"生徒.DEPARTMENT_ID AS 学科ID,\r\n" +
+					"コース.COURSE_NAME AS コース名,\r\n" +
+					"生徒.COURSE_ID AS コースID,\r\n" +
+					"生徒.SCHOOL_YEAR AS 学年,\r\n" +
+					"生徒.CLASS AS クラス,\r\n" +
+					"生徒.QUESTION AS 種類\r\n" +
+					"FROM\r\n" +
+					"STUDENT AS 生徒,\r\n" +
+					"DEPARTMENT AS 学科,\r\n" +
+					"COURSE AS コース,\r\n" +
+					"SUBJECT AS 3学科\r\n" +
+					"WHERE 生徒.SID = ?\r\n" +
+					"AND 生徒.DEPARTMENT_ID = 学科.DEPARTMENT_ID\r\n" +
+					"AND 生徒.SUBJECT_ID = 3学科.SUBJECT_ID\r\n" +
+					"AND 生徒.COURSE_ID = コース.COURSE_ID;";
+			ps = con.prepareStatement(sql);
+			ps.setInt(1, key);
+			rs = ps.executeQuery();
+			rs.next();
+				String name = rs.getString("氏名");
+				String namek = rs.getString("フリガナ");
+				String mail = rs.getString("メール");
+				int subid = rs.getInt("3学科ID");
+				String subject = rs.getString("3学科");
+				String dname = rs.getString("学科名");
+				int did = rs.getInt("学科ID");
+				String cname = rs.getString("コース名");
+				int coid = rs.getInt("コースID");
+				int year = rs.getInt("学年");
+				int clasies = rs.getInt("クラス");
+				int question = rs.getInt("種類");
+				result = new StudentDTO(name,namek,mail,subject,subid,dname,did,cname,coid,year,clasies,question);
+		} catch (SQLException e) {
+			System.out.println("DBアクセスに失敗しました。");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static StudentDTO pass(String email, int question, String answer) {
+		StudentDTO result = null;
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Qualification2?useSSL=false", "students", "seito");
+			String sql = "SELECT SID\r\n" +
+					"FROM STUDENT\r\n" +
+					"WHERE SEMAIL = ?\r\n" +
+					"AND QUESTION = ?\r\n" +
+					"AND ANSWER = ?;";
+			ps = con.prepareStatement(sql);
+			ps.setString(1, email);
+			ps.setInt(2, question);
+			ps.setString(3, answer);
+			rs = ps.executeQuery();
+			rs.next();
+			int sid = rs.getInt("SID");
+			result = new StudentDTO(sid);
+		} catch (SQLException e) {
+			System.out.println("DBアクセスに失敗しました。");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+	public static void passUpdate(String email, int question, String answer, String pass) {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Qualification2?useSSL=false", "students",
+					"seito");
+			String sql1 = "UPDATE STUDENT SET PASSWORD = ? "
+					+ "WHERE SEMAIL = ?\r\n" +
+					"AND QUESTION = ?\r\n" +
+					"AND ANSWER = ?;";
+			ps = con.prepareStatement(sql1);
+
+			String value = pass;
+			String key = "";
+			try {
+				MessageDigest digest = MessageDigest.getInstance("SHA-1");
+				byte[] results = digest.digest(value.getBytes());
+				key = String.format("%040x", new BigInteger(1, results));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			ps.setString(1, key);
+			ps.setString(2, email);
+			ps.setInt(3, question);
+			ps.setString(4, answer);
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("DBアクセスに失敗しました。");
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("数字を指定してください。");
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("DB切断時にエラーが発生しました。");
+				e.printStackTrace();
+			}
+		}
+	}
 }

@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import masteDAO.DAO;
-import masteDTO.DTO;
+import masteDAO.QualificationDAO;
+import masteDTO.QualificationDTO;
 
 
 /**
@@ -39,22 +39,24 @@ public class Superior extends HttpServlet {
 		HttpSession s = re.getSession();
 		int sid = 0;
 		try {
+			//学籍番号
 			sid = (int) s.getAttribute("id");
-			ArrayList<DTO> two = DAO.serach(sid);
-			re.setAttribute("Super", two);
+			//自身が合格した資格の上位に値する資格情報を取得する
+			ArrayList<QualificationDTO> two = QualificationDAO.search1(sid);
+			s.setAttribute("Super", two);
 			view = "/WEB-INF/student/super.jsp";
 		} catch (NumberFormatException e) {
-			view = "/WEB-INF/student/smenu.jsp";
+			view = "/WEB-INF/student/super.jsp";
 			s.setAttribute("status", "Number");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (NullPointerException e) {
-			view = "/WEB-INF/student/smenu.jsp";
+			view = "/WEB-INF/student/super.jsp";
 			s.setAttribute("status", "nai");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (Exception e) {
-			view = "/WEB-INF/student/smenu.jsp";
+			view = "/WEB-INF/student/super.jsp";
 			s.setAttribute("status", "Exception");
 			e.getStackTrace();
 			System.out.println(e);

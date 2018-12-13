@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import masteDAO.CourseDAO;
-import masteDAO.DAO;
 import masteDAO.DepartmentDAO;
+import masteDAO.StudentDAO;
+import masteDAO.SubjectDAO;
 import masteDTO.CourseDTO;
-import masteDTO.DTO;
 import masteDTO.DepartmentDTO;
+import masteDTO.StudentDTO;
+import masteDTO.SubjectDTO;
 
 /**
  * Servlet implementation class Profile
@@ -37,38 +39,51 @@ public class Profile extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest re, HttpServletResponse response) throws ServletException, IOException {
+		//文字コード宣言
 		re.setCharacterEncoding("UTF-8");
+		//リンク先
 		String view = null;
+		//セッション宣言
 		HttpSession s = re.getSession();
+		//ログイン時に保持したIDを代入する用
 		int id;
-		DTO result;
-		ArrayList<DepartmentDTO> dresult;
-		ArrayList<CourseDTO> cresult;
 
 		try {
+			//ログイン時に入力された学籍番号を取得する
 			id = (int) s.getAttribute("id");
-			result = DAO.profile(id);
+			//学籍番号から自身の情報を取得する
+			StudentDTO result = StudentDAO.profile(id);
+			//JSPに表示するために保持
 			re.setAttribute("pro", result);
 
-			dresult = DepartmentDAO.selectAll();
-			re.setAttribute("depart", dresult);
+			//変更用の情報を取得する
+			ArrayList<SubjectDTO> subject = SubjectDAO.selectAll();
+			re.setAttribute("subject", subject);
 
-			cresult = CourseDAO.selectAll();
-			re.setAttribute("course", cresult);
+			ArrayList<DepartmentDTO> department = DepartmentDAO.selectAll();
+			re.setAttribute("department", department);
 
+			ArrayList<CourseDTO> course = CourseDAO.searchAll();
+			re.setAttribute("course", course);
+
+			//後々使うので
+			s.setAttribute("depart", result.getDepartment());
+			s.setAttribute("course", result.getCourse());
+
+			//プロフィール画面を表示する
 			view = "/WEB-INF/student/profile.jsp";
 		} catch (NumberFormatException e) {
-			view = "/WEB-INF/student/smenu.jsp";
+			view = "/WEB-INF/student/profile.jsp";
 			s.setAttribute("status", "No");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (NullPointerException e) {
-			view = "/WEB-INF/student/smenu.jsp";
+			view = "/WEB-INF/student/profile.jsp";
 			s.setAttribute("status", "nai");
 			e.getStackTrace();
 			System.out.println(e);;
 		} catch (Exception e) {
-			view = "/WEB-INF/student/smenu.jsp";
+			view = "/WEB-INF/student/profile.jsp";
 			s.setAttribute("status", "Exception");
 			e.getStackTrace();
 			System.out.println(e);

@@ -1,150 +1,281 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@page import="masteDTO.DTO"%>
+<%@page import="masteDTO.StudentDTO"%>
 <%@ page import="java.util.ArrayList"%>
-<%@ page import="masteDTO.CourseDTO"%>
+<%@ page import="masteDTO.SubjectDTO"%>
 <%@ page import="masteDTO.DepartmentDTO"%>
+<%@ page import="masteDTO.CourseDTO"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="/Qualification_System/css/style.css"
+	type="text/css" media="print, projection, screen" />
+<script type="text/javascript"
+	src="/Qualification_System/js/openclose.js"></script>
+<script type="text/javascript"
+	src="/Qualification_System/js/ddmenu_min.js"></script>
+<script
+	src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+						var department = $(".department option").clone();
+						var course = $(".course option").clone();
+						$(".subject")
+								.change(
+										function() {
+											var subject = $(".subject").val();
+											$(".department").removeAttr(
+													"disabled");
+											$(".department option").remove();
+											$(department).appendTo(
+													".department");
+											$(
+													".department option[class != "
+															+ subject + "]")
+													.remove();
+											$(".department")
+													.prepend(
+															'<option value="0" selected="selected">▼選択</option>');
+											$(".course").attr("disabled",
+													"disabled");
+											$(".course option").remove();
+											$(".course")
+													.prepend(
+															'<option value="0" selected="selected">▼選択</option>');
+										});
+						$(".department")
+								.change(
+										function() {
+											var departmentVal = $(".department")
+													.val();
+											$(".course").removeAttr("disabled");
+											$(".course option").remove();
+											$(course).appendTo(".course");
+											$(
+													".course option[class != "
+															+ departmentVal
+															+ "]").remove();
+											$(".course")
+													.prepend(
+															'<option value="0" selected="selected">▼選択</option>');
+										});
+					});
+</script>
 <title>登録内容変更</title>
 </head>
 <body>
-	<%
-		DTO re = (DTO) request.getAttribute("pro");
-	%>
-	<form action="/Qualification_System/ProfileUpdate" method="post">
-		<table>
+	<div id="container">
+			<header>
+				<h1 id="logo">
+					<a href="/Qualification_System/Smenu">資格管理システム</a>
+				</h1>
+				<nav id="menubar">
+					<ul>
+						<li><a href="/Qualification_System/Registration">資格登録</a></li>
+						<li><a href="/Qualification_System/Supdate">一覧・結果更新</a></li>
+						<li><a href="/Qualification_System/Superior">上位資格確認</a></li>
+						<li><a href="/Qualification_System/Profile">登録情報変更</a></li>
+						<li><a href="/Qualification_System/LogOut">ログアウト</a></li>
+					</ul>
+				</nav>
+			</header>
+		<nav id="menubar-s">
+			<ul>
+				<li><a href="/Qualification_System/Registration">資格登録</a></li>
+				<li><a href="/Qualification_System/Supdate">一覧・結果更新</a></li>
+				<li><a href="/Qualification_System/Superior">上位資格確認</a></li>
+				<li><a href="/Qualification_System/Profile">登録情報変更</a></li>
+				<li><a href="/Qualification_System/LogOut">ログアウト</a></li>
+			</ul>
+		</nav>
+		<div id="contents">
+			<h1 id="title">登録情報変更</h1>
+			<hr>
+			<div class="form_area">
+				<%
+					StudentDTO re = (StudentDTO) request.getAttribute("pro");
+					@SuppressWarnings("unchecked")
+					ArrayList<SubjectDTO> subject = (ArrayList<SubjectDTO>) request.getAttribute("subject");
+					@SuppressWarnings("unchecked")
+					ArrayList<DepartmentDTO> department = (ArrayList<DepartmentDTO>) request.getAttribute("department");
+					@SuppressWarnings("unchecked")
+					ArrayList<CourseDTO> course = (ArrayList<CourseDTO>) request.getAttribute("course");
 
-			<tbody>
-				<tr>
-					<th>氏名</th>
-					<td><input type="text" name="name" required
-						value="<%=re.getName()%>"></td>
-				</tr>
-				<tr>
-					<th>氏名（カタカナ）</th>
-					<td><input type="text" name="namek" required
-						value="<%=re.getNamek()%>"></td>
-				</tr>
-				<tr>
-					<th>メールアドレス</th>
-					<td><input type="email" name="email" required
-						value="<%=re.getEmail()%>"></td>
-				</tr>
-				<tr>
-					<th>学科</th>
-					<td><select class="parent" name="foo">
-							<option value=<%=re.getDid()%> selected="selected"><%=re.getDname()%></option>
-							<%
-							@SuppressWarnings("unchecked")
-								ArrayList<DepartmentDTO> result = (ArrayList<DepartmentDTO>) request.getAttribute("depart");
-								for (DepartmentDTO anco : result) {
-							%>
-							<option value=<%=anco.getId()%>><%=anco.getName()%></option>
-							<%
-								}
-							%>
-					</select></td>
-				</tr>
-				<tr>
-					<th>コース</th>
-					<td><select class="children" name="bar">
-							<option value=<%=re.getCoid() %> selected="selected"><%=re.getCname2() %></option>
-							<%
-							@SuppressWarnings("unchecked")
-								ArrayList<CourseDTO> resu = (ArrayList<CourseDTO>) request.getAttribute("course");
-								for (CourseDTO anco : resu) {
-							%>
-							<option value=<%=anco.getCourse_id()%> data-val=<%=anco.getDepartment_id() %>><%=anco.getName()%></option>
-							<%
-								}
-							%>
-					</select></td>
-				</tr>
-				<tr>
-					<th>学年</th>
-					<td><select name="school_year" required>
-					<option value=<%=re.getYear() %> selected><%=re.getYear() %></option>
-							<option value="1">1</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
-							<option value="4">4</option>
-					</select></td>
-				</tr>
-				<tr>
-					<th>組</th>
-					<td><select name="class" required>
-							<%
-								if (re.getClasies() == 1) {
-							%>
-							<option value="1" selected>1</option>
-							<option value="2">2</option>
-							<%
-								} else {
-							%>
-							<option value="1">1</option>
-							<option value="2" selected>2</option>
-							<%
-								}
-							%>
-					</select></td>
-				</tr>
-				<tr>
-					<th>質問</th>
-					<td><select name="question" required>
-							<option value="1">故郷</option>
-							<option value="2">趣味</option>
-							<option value="3">小学校</option>
-							<option value="4">中学校</option>
-							<option value="5">高校</option>
-							<option value="6">得意言語</option>
-							<option value="7">ゲーム</option>
-							<option value="8">アフラック</option>
-							<option value="9">ドンカラス</option>
-							<option value="10">(*'ω'*)</option>
-					</select></td>
-				</tr>
-				<tr>
-					<th>質問の答え</th>
-					<td><input type=text name="answer" required></td>
-				</tr>
-				<tr>
-					<th>従来パスワード</th>
-					<td><input type="password" name="pass"></td>
-				</tr>
-				<tr>
-					<th>新規パスワード</th>
-					<td><input type="password" name="pass1"></td>
-				</tr>
-				<tr>
-					<th>パスワード(確認用)</th>
-					<td><input type="password" name="pass2"></td>
-				</tr>
-			</tbody>
-		</table>
-		<input type="submit" value="変更">
-	</form>
-	<script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+					String[] name = (re.getName()).split(" ");
+					String[] namek = (re.getNamek()).split(" ");
+					Object status = session.getAttribute("status");
+					if (status != null) {
+						if (status.equals("完了")) {
+				%>
+				<p>変更完了しました。</p>
+				<%
+					session.removeAttribute("status");
+						} else if (status.equals("nai")) {
+				%>
+				<p>入力ミスがあります。</p>
+				<%
+					session.removeAttribute("status");
+						} else if (status.equals("Exception")) {
+				%>
+				<p>エラーが発生しました。</p>
+				<%
+					session.removeAttribute("status");
+						}
+					}
+				%>
+
+				<form action="/Qualification_System/ProfileUpdate" method="post">
+					<dl class="sinki_form">
+						<dt>名前</dt>
+						<dd>
+							姓<input type="text" name="nameA" value="<%=name[0]%>" required><span
+								style="white-space: nowrap;">名<input type="text"
+								name="nameB" value="<%=name[1]%>" required></span>
+						</dd>
+						<dt>フリガナ</dt>
+						<dd>
+							姓<input type="text" name="namekA" value="<%=namek[0]%>" required><span
+								style="white-space: nowrap;">名<input type="text"
+								name="namekB" value="<%=namek[1]%>" required></span>
+						</dd>
+						<dt>メールアドレス</dt>
+						<dd>
+							<input type="email" name="email" value="<%=re.getEmail()%>"
+								required>
+						</dd>
+						<dt>主要学科</dt>
+						<dd>
+							<select name="subject" class="subject" required>
+								<option value=<%=re.getSubject()%> selected="selected"><%=re.getSubject_name()%></option>
+								<%
+									for (SubjectDTO anko : subject) {
+								%>
+								<option value=<%=anko.getName()%>>
+									<%=anko.getName()%>
+								</option>
+								<%
+									}
+								%>
+							</select>
+						</dd>
+						<dt>学科</dt>
+						<dd>
+							<select name="department" class="department" disabled="disabled"
+								required>
+								<option value=<%=re.getDepartment()%> selected><%=re.getDepartment_name()%></option>
+								<%
+									for (DepartmentDTO anco : department) {
+								%>
+								<option value=<%=anco.getName()%> class=<%=anco.getSname()%>>
+									<%=anco.getName()%>
+								</option>
+								<%
+									}
+								%>
+							</select>
+						</dd>
+						<dt>コース</dt>
+						<dd>
+							<select name="course" class="course" disabled="disabled" required>
+								<option value=<%=re.getCourse()%> selected><%=re.getCourse_name()%></option>
+								<%
+									for (CourseDTO anpan : course) {
+								%>
+								<option value=<%=anpan.getName()%> class=<%=anpan.getDname()%>>
+									<%=anpan.getName()%>
+								</option>
+								<%
+									}
+								%>
+							</select>
+						</dd>
+						<dt>学年・組</dt>
+						<dd>
+							<select name="school_year" required>
+								<option value=<%=re.getSchool_year()%> selected><%=re.getSchool_year()%></option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+							</select>年<select name="class" required>
+								<%
+									if (re.getSet_in() == 1) {
+								%>
+								<option value="1" selected>1</option>
+								<option value="2">2</option>
+								<%
+									} else {
+								%>
+								<option value="1">1</option>
+								<option value="2" selected>2</option>
+								<%
+									}
+								%>
+							</select>組
+						</dd>
+						<dt>秘密の質問</dt>
+						<dd>
+							<select name="question" required>
+								<option value="1">出身地は</option>
+								<option value="2">趣味は</option>
+								<option value="3">出身小学校は</option>
+								<option value="4">出身中学校は</option>
+								<option value="5">出身高等学校は</option>
+								<option value="6">得意言語</option>
+								<option value="7">尊敬している人</option>
+								<option value="8">好きな食べ物</option>
+								<option value="9">親友の名前</option>
+								<option value="10">得意教科</option>
+								<option value="11">好きな芸能人</option>
+								<option value="12">嫌いな人</option>
+								<option value="13">好きな月</option>
+								<option value="14">好きなゲーム</option>
+								<option value="15">嫁</option>
+							</select>
+						</dd>
+						<dt>質問の答え</dt>
+						<dd>
+							<input type="text" name="answer" required>
+						</dd>
+						<dt>パスワード</dt>
+						<dd>
+							<input type="password" name="pass" required>
+						</dd>
+						<dt>変更後パスワード</dt>
+						<dd>
+							<input type="password" name="pass1">
+						</dd>
+						<dt>パスワード（確認用）</dt>
+						<dd>
+							<input type="password" name="pass2">
+						</dd>
+					</dl>
+					<div id="f_buttons" style="margin-top: 7px; margin-bottom: 15px;">
+						<input type="button" class="return" value="戻る"
+							onClick="history.go(-1)"> <input type="submit"
+							class="execute" value="登録" style="margin-left: 20%;">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 	<script>
-		var $children = $('.children');
-		var original = $children.html();
-
-		$('.parent').change(function() {
-			var val1 = $(this).val();
-			$children.html(original).find('option').each(function() {
-				var val2 = $(this).data('val');
-				if (val1 != val2) {
-					$(this).not(':first-child').remove();
-				}
-			});
-			if ($(this).val() == "") {
-				$children.attr('disabled', 'disabled');
-			} else {
-				$children.removeAttr('disabled');
-			}
-		});
+		if (OCwindowWidth() <= 900) {
+			open_close("newinfo_hdr", "newinfo");
+		}
+	</script>
+	<!--メニューの３本バー-->
+	<div id="menubar_hdr" class="close">
+		<span></span><span></span><span></span>
+	</div>
+	<!--メニューの開閉処理条件設定　900px以下-->
+	<script>
+		if (OCwindowWidth() <= 900) {
+			open_close("menubar_hdr", "menubar-s");
+		}
 	</script>
 </body>
 </html>

@@ -5,6 +5,8 @@ public class StudentDTO {
 	private String name;
 	private String namek;
 	private String email;
+	private int subject;
+	private String subject_name;
 	private int department;
 	private String department_name;
 	private int course;
@@ -15,11 +17,13 @@ public class StudentDTO {
 	private String answer;
 	private String pass;
 
-	public StudentDTO(int id, String name, String namek, String email, int department, int course, int school_year, int set_in, int question, String answer, String key) {
+	public StudentDTO(int id, String name, String namek, String email, int subject, int department, int course,
+			int school_year, int set_in, int question, String answer, String key) {
 		this.id = id;
 		this.name = name;
 		this.namek = namek;
 		this.email = email;
+		this.subject = subject;
 		this.department = department;
 		this.course = course;
 		this.school_year = school_year;
@@ -41,6 +45,56 @@ public class StudentDTO {
 	public StudentDTO(int id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+
+	public StudentDTO(int id, String name, String namek, String email, int department, int course,
+			int school_year, int set_in, int question, String answer, String key) {
+		this.id = id;
+		this.name = name;
+		this.namek = namek;
+		this.email = email;
+		this.department = department;
+		this.course = course;
+		this.school_year = school_year;
+		this.set_in = set_in;
+		this.question = question;
+		this.answer = answer;
+		this.pass = key;
+	}
+
+	public StudentDTO(String name2, String namek2, String mail, int subject2, String dname, int did, String cname,
+			int coid, int year, int clasies, int question2) {
+		this.name = name2;
+		this.namek = namek2;
+		this.email = mail;
+		this.subject = subject2;
+		this.department_name = dname;
+		this.department = did;
+		this.course_name = cname;
+		this.course = coid;
+		this.school_year = year;
+		this.set_in = clasies;
+		this.question = question2;
+	}
+
+	public StudentDTO(String name2, String namek2, String mail, String subject2, int subid, String dname, int did,
+			String cname, int coid, int year, int clasies, int question2) {
+		this.name = name2;
+		this.namek = namek2;
+		this.email = mail;
+		this.subject_name = subject2;
+		this.subject = subid;
+		this.department_name = dname;
+		this.department = did;
+		this.course_name = cname;
+		this.course = coid;
+		this.school_year = year;
+		this.set_in = clasies;
+		this.question = question2;
+	}
+
+	public StudentDTO(int sid) {
+		this.id = sid;
 	}
 
 	public int getId() {
@@ -73,6 +127,23 @@ public class StudentDTO {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+
+	public int getSubject() {
+		return subject;
+	}
+
+	public void setSubject(int subject) {
+		this.subject = subject;
+	}
+
+	public String getSubject_name() {
+		return subject_name;
+	}
+
+	public void setSubject_name(String subject_name) {
+		this.subject_name = subject_name;
 	}
 
 	public int getDepartment() {
@@ -146,8 +217,5 @@ public class StudentDTO {
 	public void setPass(String pass) {
 		this.pass = pass;
 	}
-
-
-
 
 }

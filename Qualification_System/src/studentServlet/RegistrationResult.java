@@ -1,8 +1,6 @@
 package studentServlet;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,7 +14,6 @@ import masteDAO.CredentialDAO;
 import masteDAO.QualificationDAO;
 import masteDAO.StudentDAO;
 import masteDTO.CredentialDTO;
-import masteDTO.QualificationDTO;
 import masteDTO.StudentDTO;
 
 /**
@@ -44,46 +41,41 @@ public class RegistrationResult extends HttpServlet {
 		int sid = 0;
 
 		try {
+			//学籍番号
 			sid = (int) s.getAttribute("id");
 
+			//入力された情報を取得
 			String name = re.getParameter("QuaName");
-			String year = re.getParameter("year");
-			String month = re.getParameter("month");
-			String day = re.getParameter("day");
-			String date = year + "/" + month + "/" + day;
+			String date = re.getParameter("date");
 			String result = "未受験";
 
+			//登録に必要な情報を取得する
 			CredentialDTO results = CredentialDAO.search(name);
 			StudentDTO seito = StudentDAO.search(sid);
 
-			LocalDateTime dates = LocalDateTime.now();
-
+			//登録する
 			QualificationDAO.Regeistration(results.getId(), results.getName(), results.getLevel(), sid,
-					seito.getDepartment(), seito.getCourse(), seito.getSchool_year(), seito.getSet_in(), String.valueOf(dates), String.valueOf(dates),
-					String.valueOf(date), result);
+					seito.getSubject(), seito.getDepartment(), seito.getCourse(), seito.getSchool_year(),
+					seito.getSet_in(), date, result);
 
-			view = "/WEB-INF/student/registration.jsp";
+			view = "/Registration";
 			s.setAttribute("status", "完了");
 		} catch (NumberFormatException e) {
-			view = "/WEB-INF/student/registration.jsp";
+			view = "/Registration";
 			s.setAttribute("status", "Number");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (NullPointerException e) {
-			view = "/WEB-INF/student/registration.jsp";
+			view = "/Registration";
 			s.setAttribute("status", "nai");
 			e.getStackTrace();
 			System.out.println(e);
 		} catch (Exception e) {
-			view = "/WEB-INF/student/registration.jsp";
+			view = "/Registration";
 			s.setAttribute("status", "Exception");
 			e.getStackTrace();
 			System.out.println(e);
 		} finally {
-			ArrayList<QualificationDTO> one = QualificationDAO.serach(sid);
-			re.setAttribute("QuaDATE", one);
-			ArrayList<CredentialDTO> result = CredentialDAO.serachAll();
-			re.setAttribute("QuaName", result);
 			RequestDispatcher dispatcher = re.getRequestDispatcher(view);
 			dispatcher.forward(re, response);
 		}
